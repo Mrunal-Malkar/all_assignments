@@ -1,6 +1,23 @@
-import React from 'react';
+import * as Solana from "@solana/web3.js";
+import GenerateSeedKey from "./GenerateSeedKey";
+import bip39 from "bip39";
+import { useState } from "react";
 
 const Wallet = () => {
+
+  async function generateWallet(){
+    const userPass=localStorage.getItem("userPass")?localStorage.getItem("userPass")
+    : false;
+    if(!userPass){
+    return <GenerateModel/>
+    }
+    const masterSeedKey=localStorage.getItem("masterSeedKey");
+    if(!masterSeedKey){
+      return <GenerateSeedKey/>
+    } 
+
+  }
+
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
  
@@ -14,7 +31,7 @@ const Wallet = () => {
         </div>
 
         {/* Action Button */}
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-10 rounded-full transition-all active:scale-95 mb-16 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+        <button onClick={generateWallet} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-10 rounded-full transition-all active:scale-95 mb-16 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
           Generate New Wallet
         </button>
 

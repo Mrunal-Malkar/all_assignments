@@ -2,7 +2,7 @@ import { useState } from 'react'
 import * as solana from "@solana/web3.js"
 
 import './App.css'
-import Wallet from './Wallet'
+import Wallet from './components/Wallet'
 
 function App() {
 
@@ -14,7 +14,7 @@ function App() {
         <div className="text-xs uppercase tracking-widest text-white/40">Network: None</div>
       </nav>
 
-    <Wallet/>
+    <Wallet/>                   
     </>
   )
 }
