@@ -1,25 +1,26 @@
+"use client"
 import * as Solana from "@solana/web3.js";
-import GenerateSeedKey from "./GenerateSeedKey";
 import bip39 from "bip39";
 import { useState } from "react";
+import GenerateModel from "./GenerateModel";
 
 const Wallet = () => {
+
+    const [ShowGenerateModel, setShowGenerateModel] = useState<boolean>(false);
 
   async function generateWallet(){
     const userPass=localStorage.getItem("userPass")?localStorage.getItem("userPass")
     : false;
-    if(!userPass){
-    return <GenerateModel/>
-    }
+    console.log(userPass)
     const masterSeedKey=localStorage.getItem("masterSeedKey");
-    if(!masterSeedKey){
-      return <GenerateSeedKey/>
-    } 
+    if(!userPass || !masterSeedKey){
+    return setShowGenerateModel(true);
+    }
 
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
+    <div className={`min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 $`}>
  
       <main className="max-w-3xl mx-auto px-6 py-20 flex flex-col items-center">
         {/* Header Section */}
@@ -66,6 +67,7 @@ const Wallet = () => {
           </div>
         </div>
       </main>
+      <GenerateModel isOpen={ShowGenerateModel} onClose={() => setShowGenerateModel(false)} />
     </div>
   );
 };
