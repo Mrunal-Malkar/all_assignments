@@ -8,3 +8,8 @@ export const GetNewMnemonics = () => {
   console.log("the mawsterr keky",masterSeedKey);
   return mnemonics;
 };
+
+export const getEncryptedMasterSeedKey=async (UserPass:string,Mnemonics:string[])=>{
+  const masterSeedKey = bip39.mnemonicToSeedSync(Mnemonics.join(" ")).toString("hex");
+  return masterSeedKey;
+};

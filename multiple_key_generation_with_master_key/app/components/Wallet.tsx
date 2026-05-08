@@ -1,12 +1,17 @@
 "use client"
 import * as Solana from "@solana/web3.js";
+import bs58 from "bs58";
 import bip39 from "bip39";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GenerateModel from "./GenerateModel";
+import { arrayBuffer } from "stream/consumers";
+import { toast } from "react-toastify";
+import { derivePath } from "ed25519-hd-key";
 
 const Wallet = () => {
 
     const [ShowGenerateModel, setShowGenerateModel] = useState<boolean>(false);
+    const [Wallets,setWallets]=useState(localStorage.getItem("wallets")?JSON.parse(localStorage.getItem("wallets")??"[]"):[]);
 
   async function generateWallet(){
     const userPass=localStorage.getItem("userPass")?localStorage.getItem("userPass")
@@ -14,10 +19,30 @@ const Wallet = () => {
     console.log(userPass)
     const masterSeedKey=localStorage.getItem("masterSeedKey");
     if(!userPass || !masterSeedKey){
-    return setShowGenerateModel(true);
+      return setShowGenerateModel(true);
     }
-
-  }
+    console.log("the master key",masterSeedKey);
+    const MasterSeedKeyArrayBuffer=Buffer.from(masterSeedKey);
+    console.log("the master key array buffer",MasterSeedKeyArrayBuffer);
+    const lastWalletIndex=localStorage.getItem("lastIndex");
+    const derivationPath=`m/44'/501'/${lastWalletIndex?parseInt(lastWalletIndex)+1:0}'/0'`;
+    const derivedSeed=await derivePath(derivationPath,masterSeedKey).key;
+    const keyPair=Solana.Keypair.fromSeed(derivedSeed);
+    console.log("the key pair",keyPair);
+    const privateKey=bs58.encode(keyPair.secretKey);
+    const publicKey=keyPair.publicKey.toBase58();
+    localStorage.setItem("lastIndex",lastWalletIndex?parseInt(lastWalletIndex)+1+"":"0");
+    localStorage.setItem(`wallet-${lastWalletIndex?parseInt(lastWalletIndex)+1:0}`,JSON.stringify({
+        publicKey:publicKey,
+        privateKey:Buffer.from(privateKey).toString("hex"),
+        derivationPath,
+      }));
+      return toast.success("Created new wallet successfully!")
+    }
+    
+      if(!localStorage.getItem("masterSeedKey") || !localStorage.getItem("userPass")){
+        ShowGenerateModel==true?null:setShowGenerateModel(true);
+      }
 
   return (
     <div className={`min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 $`}>
@@ -66,6 +91,8 @@ const Wallet = () => {
             </div>
           </div>
         </div>
+
+
       </main>
       <GenerateModel isOpen={ShowGenerateModel} onClose={() => setShowGenerateModel(false)} />
     </div>
