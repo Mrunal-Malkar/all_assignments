@@ -1,5 +1,4 @@
 import bip39 from "bip39";
-import React from "react";
 
 export const GetNewMnemonics = () => {
   const rawMnemonics = bip39.generateMnemonic(256);

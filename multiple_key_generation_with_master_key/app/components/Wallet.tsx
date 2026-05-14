@@ -1,24 +1,14 @@
 "use client"
 import * as Solana from "@solana/web3.js";
-
 import bs58 from "bs58";
-
 import bip39 from "bip39";
-
 import { useEffect, useState } from "react";
-
 import GenerateModel from "./GenerateModel";
-
 import { arrayBuffer } from "stream/consumers";
-
 import { toast, ToastContainer } from "react-toastify";
-
 import { derivePath } from "ed25519-hd-key";
-
 import { useQuery } from "@tanstack/react-query";
-
 import getWallets, { WalletType } from "../functions/getWallets";
-
 import {
   Eye,
   KeyIcon,

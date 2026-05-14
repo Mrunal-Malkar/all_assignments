@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { GetNewMnemonics } from "../functions/getFunctions";
+import { getEncryptedMasterSeedKey, GetNewMnemonics } from "../functions/getFunctions";
 import { toast, ToastContainer } from "react-toastify";
 import { get } from "http";
 
@@ -78,12 +78,14 @@ const GenerateModel = ({
   async function handleFinishSetup(){
     if(!UserPass || !Mnemonics) {
       return toast.error("Missing password or mnemonics. Please try again.");
-  }
-  const ecryptedMasterSeedKey=await getEncryptedMasterSeedKey(UserPass,Mnemonics);
+  }  const ecryptedMasterSeedKey= await getEncryptedMasterSeedKey(UserPass,Mnemonics);
   if(!ecryptedMasterSeedKey){
     return toast.error("Error encrypting master seed key. Please try again.");
   }
-  return toast.success("Setup complete! You can now generate new Wallets.");
+  localStorage.setItem("masterSeedKey",ecryptedMasterSeedKey);
+  localStorage.setItem("userPass",UserPass);
+   toast.success("Setup complete! You can now generate new Wallets.");
+   return onClose();
 }
 
   return (
