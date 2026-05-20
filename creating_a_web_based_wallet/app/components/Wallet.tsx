@@ -79,9 +79,25 @@ const Wallet = () => {
     return toast.success("Created new wallet successfully!");
   }
 
-  function deleteWallet(i: number) {
-    localStorage.removeItem(`wallet-${i}`);
+  function deleteWallet(publicKey: string) {
+    let emptyWallets = 0;
+    let Index = 0;
+    console.log("finding delete",publicKey);
+    
+    for (let i = 0; emptyWallets <20; i++) {
+      const wallet = localStorage.getItem(`wallet-${i}`);
+      if (wallet) {
+        const walletData: WalletType = JSON.parse(wallet);
+        if (walletData.publicKey == publicKey) {
+          Index = i;
+          break;
+        }
+      } else {
+        emptyWallets++;
+      }
+    }
 
+    localStorage.removeItem(`wallet-${Index}`);
     toast.success("removed wallet");
 
     refetch();
@@ -89,21 +105,27 @@ const Wallet = () => {
 
   function openApp() {
     const seedKey = localStorage.getItem("masterSeedKey");
-    const userPass=localStorage.getItem("userPass");
-    if (!seedKey || !userPass) {console.log("seeting generatew true model"); setShowGenerateModel(true)}
-    else{setShowApp(true)}
+    const userPass = localStorage.getItem("userPass");
+    if (!seedKey || !userPass) {
+      console.log("seeting generatew true model");
+      setShowGenerateModel(true);
+    } else {
+      setShowApp(true);
+    }
   }
 
-  if(!showApp && !ShowGenerateModel){
+  if (!showApp && !ShowGenerateModel) {
     return (
-      <div onClick={openApp} className="w-screen h-screen flex justify-center items-center">
+      <div
+        onClick={openApp}
+        className="w-screen h-screen flex justify-center items-center"
+      >
         Open App
       </div>
-    )
+    );
   }
 
   return (
-
     <div className="min-h-screen bg-black text-white font-mono selection:bg-white selection:text-black">
       <main className="max-w-3xl mx-auto px-6 py-20 flex flex-col items-center">
         <ToastContainer />
@@ -148,7 +170,7 @@ const Wallet = () => {
             Wallets?.map((wallet: WalletType, i) => {
               return (
                 <div
-                  key={i}
+                  key={wallet.publicKey}
                   className="bg-zinc-900 border-4 border-white shadow-[10px_10px_0px_0px_rgba(59,130,246,1)] overflow-hidden"
                 >
                   {/* Card Header */}
@@ -168,7 +190,8 @@ const Wallet = () => {
                       {/* Delete Icon */}
 
                       <button
-                        onClick={() => deleteWallet(i)}
+                      type="button"
+                        onClick={(e) =>{e.stopPropagation(); deleteWallet(wallet.publicKey)}}
                         className="hover:text-red-600 transition-colors active:scale-90"
                       >
                         <Trash2 className="w-4 h-4 stroke-[3px]" />
