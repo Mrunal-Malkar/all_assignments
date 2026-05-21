@@ -139,11 +139,13 @@ const Wallet = () => {
 
   if (!showApp && !ShowGenerateModel) {
     return (
-      <div
-        onClick={openApp}
-        className="w-screen h-screen flex justify-center items-center"
-      >
-        Open App
+      <div className="w-screen h-screen flex justify-center items-center">
+        <button
+          onClick={openApp}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest text-lg border-4 border-black shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:bg-white active:text-black"
+        >
+          Open App
+        </button>
       </div>
     );
   }
@@ -245,7 +247,11 @@ const Wallet = () => {
                         </div>
 
                         <div className="font-mono text-sm bg-black border-2 border-zinc-800 p-4 text-yellow-400 flex items-center justify-between">
-                          <span>{isCurrentWalletBalanceLoading?"Loading...":currentWalletBalance}</span>
+                          <span>
+                            {isCurrentWalletBalanceLoading
+                              ? "Loading..."
+                              : currentWalletBalance}
+                          </span>
                           <span className="text-[10px] bg-zinc-800 text-white px-2 py-1 font-black tracking-widest">
                             SOL
                           </span>
@@ -285,6 +291,7 @@ const Wallet = () => {
                       {/* Action / Delete Button */}
                       <div className="pt-2">
                         <button
+                        onClick={() => deleteWallet(wallet.publicKey)}
                           type="button"
                           className="w-full flex items-center justify-center gap-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border-2 border-red-600/50 hover:border-red-600 p-3 font-black uppercase tracking-widest text-xs transition-colors active:scale-[0.98]"
                         >
