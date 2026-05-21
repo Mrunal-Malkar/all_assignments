@@ -10,6 +10,7 @@ import { derivePath } from "ed25519-hd-key";
 import { useQuery } from "@tanstack/react-query";
 import getWallets, { WalletType } from "../functions/getWallets";
 import {
+  Coins,
   Divide,
   Eye,
   KeyIcon,
@@ -19,11 +20,25 @@ import {
   WalletIcon,
 } from "lucide-react";
 import UserPassModel from "./UserPassModel";
+import getWalletInfo from "../functions/getWalletInfo";
 
 const Wallet = () => {
   const [ShowGenerateModel, setShowGenerateModel] = useState<boolean>(false);
   const [shouldGetWallets, setShouldGetWallets] = useState(false);
   const [showApp, setShowApp] = useState(false);
+  const [currentWallet, setCurrentWallet] = useState<WalletType | null>(null);
+  const {
+    data: currentWalletBalance,
+    isLoading: isCurrentWalletBalanceLoading,
+    refetch: refetchCurrentWalletBalance,
+  } = useQuery({
+    queryKey: ["currentWalletBalance", currentWallet?.publicKey],
+    queryFn: () =>
+      currentWallet?.publicKey
+        ? getWalletInfo(currentWallet?.publicKey)
+        : Promise.resolve(null),
+    enabled: !!currentWallet,
+  });
 
   const {
     data: Wallets,
@@ -79,12 +94,20 @@ const Wallet = () => {
     return toast.success("Created new wallet successfully!");
   }
 
+  function handleWalletExpansion(wallet: WalletType) {
+    if (currentWallet?.publicKey == wallet.publicKey) {
+      setCurrentWallet(null);
+    } else {
+      setCurrentWallet(wallet);
+    }
+  }
+
   function deleteWallet(publicKey: string) {
     let emptyWallets = 0;
     let Index = 0;
-    console.log("finding delete",publicKey);
-    
-    for (let i = 0; emptyWallets <20; i++) {
+    console.log("finding delete", publicKey);
+
+    for (let i = 0; emptyWallets < 20; i++) {
       const wallet = localStorage.getItem(`wallet-${i}`);
       if (wallet) {
         const walletData: WalletType = JSON.parse(wallet);
@@ -171,10 +194,14 @@ const Wallet = () => {
               return (
                 <div
                   key={wallet.publicKey}
-                  className="bg-zinc-900 border-4 border-white shadow-[10px_10px_0px_0px_rgba(59,130,246,1)] overflow-hidden"
+                  className={`bg-zinc-900 border-4 border-white overflow-hidden transition-all cursor-pointer ${
+                    currentWallet?.publicKey == wallet.publicKey
+                      ? "shadow-[10px_10px_0px_0px_rgba(59,130,246,1)]"
+                      : "shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+                  }`}
+                  onClick={() => handleWalletExpansion(wallet)}
                 >
                   {/* Card Header */}
-
                   <div className="bg-white text-black px-4 py-2 flex justify-between items-center border-b-4 border-white">
                     <div className="flex items-center gap-2">
                       <span className="font-black text-sm uppercase">
@@ -186,26 +213,14 @@ const Wallet = () => {
                       <span className="bg-black text-white text-[10px] font-black px-2 py-0.5">
                         ED25519
                       </span>
-
-                      {/* Delete Icon */}
-
-                      <button
-                      type="button"
-                        onClick={(e) =>{e.stopPropagation(); deleteWallet(wallet.publicKey)}}
-                        className="hover:text-red-600 transition-colors active:scale-90"
-                      >
-                        <Trash2 className="w-4 h-4 stroke-[3px]" />
-                      </button>
                     </div>
                   </div>
 
-                  <div className="p-6 space-y-6">
-                    {/* Public Key */}
-
+                  {/* ALWAYS VISIBLE: Public Key Area */}
+                  <div className="p-6">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="w-4 h-4 text-blue-500" />
-
                         <label className="text-[10px] font-black uppercase tracking-tighter text-zinc-500">
                           Public_Address
                         </label>
@@ -215,41 +230,70 @@ const Wallet = () => {
                         {wallet.publicKey}
                       </div>
                     </div>
+                  </div>
 
-                    {/* Private Key */}
+                  {/* EXPANDED AREA: Balance, Private Key, Delete */}
+                  {currentWallet?.publicKey == wallet.publicKey && (
+                    <div className="px-6 pb-6 space-y-6 border-t-2 border-zinc-800 pt-6 mt-2">
+                      {/* SOL Balance */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Coins className="w-4 h-4 text-yellow-500" />
+                          <label className="text-[10px] font-black uppercase tracking-tighter text-zinc-500">
+                            Network_Balance
+                          </label>
+                        </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <KeyIcon className="w-4 h-4 text-red-500" />
-
-                        <label className="text-[10px] font-black uppercase tracking-tighter text-zinc-500">
-                          Secret_Key_Data
-                        </label>
+                        <div className="font-mono text-sm bg-black border-2 border-zinc-800 p-4 text-yellow-400 flex items-center justify-between">
+                          <span>{isCurrentWalletBalanceLoading?"Loading...":currentWalletBalance}</span>
+                          <span className="text-[10px] bg-zinc-800 text-white px-2 py-1 font-black tracking-widest">
+                            SOL
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="relative group cursor-crosshair">
-                        <div className="font-mono text-xs break-all bg-black border-2 border-zinc-800 p-4 flex justify-between items-center overflow-hidden">
-                          <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-75 z-10">
-                            {wallet.privateKey}
-                          </span>
+                      {/* Private Key */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <KeyIcon className="w-4 h-4 text-red-500" />
+                          <label className="text-[10px] font-black uppercase tracking-tighter text-zinc-500">
+                            Secret_Key_Data
+                          </label>
+                        </div>
 
-                          {/* Masking Layer */}
-
-                          <div className="absolute inset-0 flex items-center px-4 bg-black group-hover:hidden">
-                            <span className="text-zinc-700 font-black tracking-[0.5em]">
-                              ••••••••••••••••••••••••••••••••
+                        <div className="relative group cursor-crosshair">
+                          <div className="font-mono text-xs break-all bg-black border-2 border-zinc-800 p-4 flex justify-between items-center overflow-hidden">
+                            <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-75 z-10">
+                              {wallet.privateKey}
                             </span>
-                          </div>
 
-                          <div className="flex items-center gap-2 text-[10px] font-black text-blue-500 group-hover:hidden">
-                            <Eye className="w-4 h-4" />
+                            {/* Masking Layer */}
+                            <div className="absolute inset-0 flex items-center px-4 bg-black group-hover:hidden">
+                              <span className="text-zinc-700 font-black tracking-[0.5em]">
+                                ••••••••••••••••••••••••••••••••
+                              </span>
+                            </div>
 
-                            <span>HOVER_TO_REVEAL</span>
+                            <div className="flex items-center gap-2 text-[10px] font-black text-blue-500 group-hover:hidden">
+                              <Eye className="w-4 h-4" />
+                              <span>HOVER_TO_REVEAL</span>
+                            </div>
                           </div>
                         </div>
                       </div>
+
+                      {/* Action / Delete Button */}
+                      <div className="pt-2">
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-center gap-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border-2 border-red-600/50 hover:border-red-600 p-3 font-black uppercase tracking-widest text-xs transition-colors active:scale-[0.98]"
+                        >
+                          <Trash2 className="w-4 h-4 stroke-[3px]" />
+                          Purge_Wallet
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
