@@ -9,7 +9,7 @@ export default async function getWalletBalance(publicKey: string) {
         id: 1,
         method: "getAccountInfo",
         params: [
-          "3XsyYv8aF6uzX71AaaGdznSdLR679cv7mXzLCVAcxs1r",
+          publicKey,
           {
             commitment: "processed",
             encoding: "base58",
@@ -20,7 +20,8 @@ export default async function getWalletBalance(publicKey: string) {
       }),
     });
     const data = await req.json();
-    const sol = parseInt(data.result.value.lamports) / 1000000000;
+    console.log("this is the data",data);
+    const sol =data.result.value!=null ? (parseInt(data.result.value.lamports) / 1000000000) : 0;
     console.log("this is the sol", sol);
     return sol;
   } catch (err) {
