@@ -22,6 +22,7 @@ import {
 import UserPassModel from "./UserPassModel";
 import getWalletInfo from "../functions/getWalletInfo";
 import { useRouter } from "next/navigation";
+import { CurrentWalletStore } from "@/utils/zustand/walletStores";
 
 const Wallet = () => {
   const [ShowGenerateModel, setShowGenerateModel] = useState<boolean>(false);
@@ -105,7 +106,10 @@ const router=useRouter();
   }
 
 function loadWallet(wallet: WalletType) {
-  router.push(`/loadWallet?publicKey=${wallet.publicKey}`);
+  const { setPublicKey, setPrivateKey } = CurrentWalletStore.getState();
+  setPublicKey(wallet.publicKey);
+  setPrivateKey(wallet.privateKey);
+  router.push(`/loadWallet`);
 }
 
   function deleteWallet(publicKey: string) {
