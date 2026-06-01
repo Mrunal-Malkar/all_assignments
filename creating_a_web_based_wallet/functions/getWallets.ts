@@ -30,6 +30,7 @@ export default function getWallets(): WalletType[] {
       emptySearches += 1;
       continue;
     }
+    emptySearches = 0;
 
     const wallet: WalletType = JSON.parse(rawWallet);
 
