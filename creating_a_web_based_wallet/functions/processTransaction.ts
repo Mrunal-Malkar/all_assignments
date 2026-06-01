@@ -6,6 +6,8 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import bs58 from "bs58";
+import nacl from "tweetnacl";
 
 export default async function processTransaction({
   fromPublicKey,
@@ -30,9 +32,22 @@ export default async function processTransaction({
     );
 
     const toPubKey = new PublicKey(toAddress);
-    const fromKeyPair = Keypair.fromSecretKey(
-      Uint8Array.from(JSON.parse(privateKey)),
-    );
+    
+    console.log("the private key",privateKey);
+
+    const decodedPrivateKey = bs58.decode(privateKey);
+    console.log("this is the decoded private key in uint8array format", decodedPrivateKey,"its length",decodedPrivateKey.length);
+    console.log("till here")
+    // const decodedPublicKey= bs58.decode(fromPublicKey);
+    // console.log("this is the decoded private key in uint8array format", decodedPrivateKey);
+    // console.log("this is the decoded public key in uint8array format", decodedPublicKey);
+    // const secretKey=new Uint8Array([...decodedPrivateKey, ...decodedPublicKey]);
+    // console.log("this is the length of secret key in uint8array format", secretKey.length);
+
+const SecretKey= nacl.sign.keyPair.fromSeed(decodedPrivateKey).secretKey // returns 64 bytes
+const keypair = Keypair.fromSecretKey(SecretKey);
+    console.log("this is the keypair object from the input private key", keypair);
+
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: fromPubKey,
@@ -48,7 +63,7 @@ export default async function processTransaction({
     transaction.recentBlockhash = latestBlockHash.blockhash;
 
     const signature = await sendAndConfirmTransaction(connection, transaction, [
-      fromKeyPair,
+      keypair
     ]);
 
     console.log("the signature of the transaction is", signature);

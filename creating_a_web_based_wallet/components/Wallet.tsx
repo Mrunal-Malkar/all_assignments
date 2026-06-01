@@ -69,9 +69,10 @@ const router=useRouter();
     const MasterSeedKeyArrayBuffer = Buffer.from(masterSeedKey);
     const lastWalletIndex = localStorage.getItem("lastIndex");
     const derivationPath = `m/44'/501'/${lastWalletIndex ? parseInt(lastWalletIndex) + 1 : 0}'/0'`;
-    const derivedSeed = await derivePath(derivationPath, masterSeedKey).key;
+    const derivedSeed = derivePath(derivationPath, masterSeedKey).key;
     const keyPair = Solana.Keypair.fromSeed(derivedSeed);
-    const privateKey = bs58.encode(keyPair.secretKey);
+    
+    const privateKey = (bs58.encode(keyPair.secretKey).slice(0,32));
     const publicKey = keyPair.publicKey.toBase58();
 
     localStorage.setItem(
@@ -86,7 +87,7 @@ const router=useRouter();
       JSON.stringify({
         publicKey: publicKey,
 
-        privateKey: Buffer.from(privateKey).toString("hex"),
+        privateKey: privateKey,
 
         derivationPath,
       }),

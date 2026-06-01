@@ -2,7 +2,7 @@
   "name": "creating_a_web_based_wallet",
   "version": "0.1.0",
   "private": true,
-  "type":"module",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -21,6 +21,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-toastify": "^11.1.0",
+    "tweetnacl": "^1.0.3",
     "zustand": "^5.0.14"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@ import {
   Send,
   Loader2
 } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import processTransaction from "@/functions/processTransaction";
 
 export default function TransferModal({ 
@@ -40,12 +40,13 @@ export default function TransferModal({
       e.preventDefault();
       if (!privateKey || !amount) return;
       setIsProcessing(true);
-      await processTransaction({fromPublicKey, toAddress, amount, privateKey}).then((signature)=>{
-        setIsProcessing(false);
-        toast.success("Transaction successful! Signature: " + signature);
-        setStep(3);
-      })
+      console.log(("calling the process transaction function with these values",{fromPublicKey, toAddress, amount, privateKey}));
+      await processTransaction({fromPublicKey, toAddress, amount, privateKey})
+      setIsProcessing(false);
+      setStep(3);
     }catch(e){
+      setIsProcessing(false);
+      console.log("the error in the transfer modal is",e);
       const errorMessage = e instanceof Error ? e.message : "An unknown error occurred while processing the transaction.";
       toast.error(errorMessage);
     }
@@ -68,7 +69,7 @@ export default function TransferModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      
+      <ToastContainer/>
       {/* Modal Container */}
       <div className="w-full max-w-lg bg-zinc-900 border-4 border-white shadow-[10px_10px_0px_0px_rgba(59,130,246,1)] flex flex-col animate-in zoom-in-95 duration-200">
         
@@ -161,7 +162,7 @@ export default function TransferModal({
               {/* Private Key Input */}
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-tighter text-red-500">
-                  Secret_Key_Data
+                  Private_KEY_Data
                 </label>
                 <div className="relative">
                   <input
