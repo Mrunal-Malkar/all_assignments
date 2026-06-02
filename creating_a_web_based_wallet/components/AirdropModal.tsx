@@ -20,8 +20,8 @@ export default function AirdropModal({ isOpen, onClose, targetPublicKey }: Airdr
     try {
       console.log(`Requesting ${amount} SOL to ${targetPublicKey}`);
       // Simulate network request for UI demo purposes
-      await processAirdrop(targetPublicKey,parseFloat(amount as string));
-
+      const result= await processAirdrop(targetPublicKey,parseFloat(amount as string));
+      console.log("airdrop status",result);
       toast.success(`Successfully airdropped ${amount} SOL to ${targetPublicKey}`);
       onClose();
     } catch (error) {
