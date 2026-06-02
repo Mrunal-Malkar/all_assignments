@@ -40,7 +40,6 @@ export default function TransferModal({
       e.preventDefault();
       if (!privateKey || !amount) return;
       setIsProcessing(true);
-      console.log(("calling the process transaction function with these values",{fromPublicKey, toAddress, amount, privateKey}));
       await processTransaction({fromPublicKey, toAddress, amount, privateKey})
       setIsProcessing(false);
       setStep(3);

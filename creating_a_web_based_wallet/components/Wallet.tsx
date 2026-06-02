@@ -22,13 +22,15 @@ import {
 import UserPassModel from "./UserPassModel";
 import getWalletInfo from "../functions/getWalletInfo";
 import { useRouter } from "next/navigation";
-import { CurrentWalletStore } from "@/utils/zustand/walletStores";
+import { CurrentWalletStore, showAppBooleanStore } from "@/utils/zustand/walletStores";
 
 const Wallet = () => {
   const [ShowGenerateModel, setShowGenerateModel] = useState<boolean>(false);
-  const [shouldGetWallets, setShouldGetWallets] = useState(false);
-  const [showApp, setShowApp] = useState(false);
   const [currentWallet, setCurrentWallet] = useState<WalletType | null>(null);
+  const shouldGetWallets=showAppBooleanStore((state)=>state.shouldGetWallets);
+  const showApp = showAppBooleanStore((state)=>state.showApp);
+  const router = useRouter();
+  
   const {
     data: currentWalletBalance,
     isLoading: isCurrentWalletBalanceLoading,
@@ -51,7 +53,6 @@ const Wallet = () => {
     queryFn: getWallets,
     enabled: shouldGetWallets,
   });
-  const router = useRouter();
 
   async function generateWallet() {
     const userPass = localStorage.getItem("userPass")
@@ -137,7 +138,7 @@ const Wallet = () => {
       console.log("seeting generatew true model");
       setShowGenerateModel(true);
     } else {
-      setShowApp(true);
+      showAppBooleanStore.getState().setShowApp(true);
     }
   }
 
@@ -245,7 +246,7 @@ const Wallet = () => {
       {/* get the userPass */}
       <UserPassModel
         isOpen={!shouldGetWallets && !ShowGenerateModel}
-        onClose={() => setShouldGetWallets(true)}
+        onClose={() => showAppBooleanStore.getState().setShouldGetWallets(true)}
       />
     </div>
   );
