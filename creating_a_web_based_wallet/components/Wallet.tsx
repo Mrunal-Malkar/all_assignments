@@ -51,15 +51,13 @@ const Wallet = () => {
     queryFn: getWallets,
     enabled: shouldGetWallets,
   });
-const router=useRouter();
+  const router = useRouter();
 
   async function generateWallet() {
     const userPass = localStorage.getItem("userPass")
       ? localStorage.getItem("userPass")
       : false;
-
     console.log(userPass);
-
     const masterSeedKey = localStorage.getItem("masterSeedKey");
 
     if (!userPass || !masterSeedKey) {
@@ -71,30 +69,25 @@ const router=useRouter();
     const derivationPath = `m/44'/501'/${lastWalletIndex ? parseInt(lastWalletIndex) + 1 : 0}'/0'`;
     const derivedSeed = derivePath(derivationPath, masterSeedKey).key;
     const keyPair = Solana.Keypair.fromSeed(derivedSeed);
-    
-    const privateKey = (bs58.encode(keyPair.secretKey).slice(0,32));
+    const privateKey = bs58.encode(keyPair.secretKey);
+    console.log("this is the new privateKey base58 encoded",privateKey,"its length after decoding",(bs58.decode(privateKey)).length);
     const publicKey = keyPair.publicKey.toBase58();
 
     localStorage.setItem(
       "lastIndex",
-
       lastWalletIndex ? parseInt(lastWalletIndex) + 1 + "" : "0",
     );
 
     localStorage.setItem(
       `wallet-${lastWalletIndex ? parseInt(lastWalletIndex) + 1 : 0}`,
-
       JSON.stringify({
         publicKey: publicKey,
-
         privateKey: privateKey,
-
         derivationPath,
       }),
     );
 
     refetch();
-
     return toast.success("Created new wallet successfully!");
   }
 
@@ -106,12 +99,12 @@ const router=useRouter();
     }
   }
 
-function loadWallet(wallet: WalletType) {
-  const { setPublicKey, setPrivateKey } = CurrentWalletStore.getState();
-  setPublicKey(wallet.publicKey);
-  setPrivateKey(wallet.privateKey);
-  router.push(`/loadWallet`);
-}
+  function loadWallet(wallet: WalletType) {
+    const { setPublicKey, setPrivateKey } = CurrentWalletStore.getState();
+    setPublicKey(wallet.publicKey);
+    setPrivateKey(wallet.privateKey);
+    router.push(`/loadWallet`);
+  }
 
   function deleteWallet(publicKey: string) {
     let emptyWallets = 0;

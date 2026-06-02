@@ -25,29 +25,25 @@ export default async function processTransaction({
       "https://api.devnet.solana.com",
       "confirmed",
     );
-    const fromPubKey = new PublicKey(fromPublicKey);
-    console.log(
-      "this is the publick key object from the input string(public key)",
-      fromPubKey,
-    );
 
-    const toPubKey = new PublicKey(toAddress);
+      const fromPubKey = new PublicKey(fromPublicKey);
+      console.log(
+        "this is the publick key object from the input string(public key)",
+        fromPubKey,
+      );
+      const toPubKey = new PublicKey(toAddress);
+ 
     
     console.log("the private key",privateKey);
 
     const decodedPrivateKey = bs58.decode(privateKey);
+    console.log("decoded length =", decodedPrivateKey.length);
+    
     console.log("this is the decoded private key in uint8array format", decodedPrivateKey,"its length",decodedPrivateKey.length);
     console.log("till here")
-    // const decodedPublicKey= bs58.decode(fromPublicKey);
-    // console.log("this is the decoded private key in uint8array format", decodedPrivateKey);
-    // console.log("this is the decoded public key in uint8array format", decodedPublicKey);
-    // const secretKey=new Uint8Array([...decodedPrivateKey, ...decodedPublicKey]);
-    // console.log("this is the length of secret key in uint8array format", secretKey.length);
 
-const SecretKey= nacl.sign.keyPair.fromSeed(decodedPrivateKey).secretKey // returns 64 bytes
-const keypair = Keypair.fromSecretKey(SecretKey);
-    console.log("this is the keypair object from the input private key", keypair);
 
+const keypair = Keypair.fromSecretKey(decodedPrivateKey);
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: fromPubKey,

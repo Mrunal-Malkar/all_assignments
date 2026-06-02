@@ -50,11 +50,6 @@ export default function TransferModal({
       const errorMessage = e instanceof Error ? e.message : "An unknown error occurred while processing the transaction.";
       toast.error(errorMessage);
     }
-    // Mock network request delay
-    // setTimeout(() => {
-    //   setIsProcessing(false);
-    //   setStep(3);
-    // }, 1500);
   };
 
   // Reset state and close modal
