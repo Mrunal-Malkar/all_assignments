@@ -14,6 +14,7 @@ import {
   Divide,
   Eye,
   KeyIcon,
+  MoveUpRight,
   Plus,
   ShieldCheck,
   Trash2,
@@ -175,6 +176,15 @@ const Wallet = () => {
           </p>
         </div>
 
+     {/* token launchpad button */}
+        <button
+        onClick={()=>router.push("/tokenLaunchpad")}
+          className="group relative w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase py-6 border-4 border-black shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:bg-white active:text-black mb-16"
+        >
+          <span className="text-xl tracking-tight">Go to token Launchpad</span>
+        <MoveUpRight className="w-6 h-6 stroke-[3px]"/>
+        </button>
+
         {/* Action Button */}
         <button
           onClick={generateWallet}
@@ -184,6 +194,7 @@ const Wallet = () => {
 
           <span className="text-xl tracking-tight">Generate New Wallet</span>
         </button>
+     
 
         {/* Wallet Display Area */}
         <div className="w-full space-y-10">
